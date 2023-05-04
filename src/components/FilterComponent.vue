@@ -75,7 +75,7 @@ onBeforeUpdate(() => {
         content: '';
         position: absolute;
         left: 25px;
-        top: 19px;
+        top: 20px;
         width: 2px;
         height: 2px;
         background: #2196F3;

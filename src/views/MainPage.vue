@@ -10,29 +10,8 @@
     <section>
       <TabSection
         :tabs="tabs"
-        @handleClick="handleClick"
       />
-      <div v-if="tabs[0].active" class="cheapest-tab tab">
-        <TicketList
-          v-if="!loading && getCheapestTickets"
-          :tickets="getCheapestTickets ? getCheapestTickets?.slice(0, 5) : []"
-        />
-        <Loader v-else />
-      </div>
-      <div v-if="tabs[1].active" class="faster-tab tab">
-        <TicketList
-          v-if="!loading && getFasterTickets"
-          :tickets="getFasterTickets ? getFasterTickets?.slice(0, 5) : []"
-        />
-        <Loader v-else />
-      </div>
-      <div v-if="tabs[2].active" class="optimize-tab tab">
-        <TicketList
-          v-if="!loading && getOptimizeTickets"
-          :tickets="getOptimizeTickets ? getOptimizeTickets?.slice(0, 5) : []"
-        />
-        <Loader v-else />
-      </div>
+      <RouterView />
       <button>ПОКАЗАТЬ ЕЩЕ 5 БИЛЕТОВ!</button>
     </section>
   </main>
@@ -41,21 +20,19 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
 import { storeToRefs } from 'pinia'
-import Loader from '../components/Loader.vue'
 
 import FilterComponent from '../components/FilterComponent.vue';
 import type { IFilterItem } from '../types/FilterItem';
 import { useFilterStore } from '../stores/filter'
 
 import TabSection from '../components/TabSection.vue'
-import type { ITabItem } from '../types/TabItem';
 
-import TicketList from '../components/TicketList.vue';
 import { useTicketStore } from '../stores/ticket'
 
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter()
+const route = useRoute()
 
 // Filter component section
 const filterStore = useFilterStore()
@@ -70,9 +47,9 @@ function handleUpdate(): void {
   })
   if (urlArray.length) {
     const queryParams = urlArray.join(',')
-    router.push({ name: 'MainPage', query: { 'transfer-count': queryParams } })
+    router.push({ query: { 'transfer-count': queryParams } })
   } else {
-    router.push({ name: 'MainPage' })
+    router.push({ name: `${String(route.name)}` })
   }
 }
 
@@ -88,35 +65,20 @@ onMounted(() => {
 const tabs = reactive([
   {
     title: 'Самый дешевый',
-    active: true
+    path: '/cheap-tickets'
   },
   {
     title: 'Самый быстрый',
-    active: false
+    path: '/faster-tickets'
   },
   {
     title: 'Оптимальный',
-    active: false
+    path: '/optimize-tickets'
   }
 ])
 
-function handleClick (tab: ITabItem): void {
-  if (tab.active) {
-    return
-  }
-  tabs.map((item: ITabItem) => {
-    if (item.title === tab.title) {
-      item.active = true
-    } else {
-      item.active = false
-    }
-  })
-}
-
 // ticket section
 const ticketStore = useTicketStore()
-const { loading, getCheapestTickets, getFasterTickets, getOptimizeTickets } = storeToRefs(ticketStore)
-
 onMounted(() => {
   ticketStore.FETCH_SEARCH_ID()
 })

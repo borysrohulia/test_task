@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import type { ITabItem } from '../types/TabItem';
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 interface TabSectionProps {
   tabs: ITabItem[]
@@ -9,14 +12,14 @@ const props = defineProps<TabSectionProps>()
 
 <template>
   <div class="tab-section">
-    <button 
+    <router-link 
       v-for="(tab, key) in props.tabs"
-      :key="key" class="tab-section__btn"
-      :class="{ active: tab.active }"
+      :key="key" class="tab-section__link"
       @click="$emit('handleClick', tab)"
+      :to="{  path: `${tab.path}`, query: route.query }"
     >
       {{ tab.title }}
-    </button>
+    </router-link>
   </div>
 </template>
 
@@ -30,7 +33,7 @@ const props = defineProps<TabSectionProps>()
   background: #FFFFFF;
   border-collapse: collapse;
   margin-bottom: 20px;
-  &__btn {
+  &__link {
     border: 1px solid #DFE5EC;
     font-weight: 600;
     font-size: 12px;
@@ -41,6 +44,8 @@ const props = defineProps<TabSectionProps>()
     background: #FFFFFF;
     width: 34%;
     cursor: pointer;
+    text-align: center;
+    text-decoration: none;
     &:first-child {
       border-top-left-radius: 5px;
       border-bottom-left-radius: 5px;
@@ -50,7 +55,7 @@ const props = defineProps<TabSectionProps>()
       border-bottom-right-radius: 5px;
     }
   }
-  &__btn.active {
+  .router-link-active {
     background: #2196F3;
     color: #FFF;
   }

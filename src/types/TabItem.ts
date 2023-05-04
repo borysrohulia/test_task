@@ -1,4 +1,5 @@
 export interface ITabItem {
   title: string
-  active: boolean
+  // active: boolean
+  path: string
 }
